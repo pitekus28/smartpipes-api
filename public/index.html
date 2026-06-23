@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>SmartPipes Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f5;
+      margin: 0;
+      padding: 20px;
+      color: #1f2933;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitulo {
+      color: #5f6b7a;
+      margin-bottom: 25px;
+    }
+
+    .contenedor {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-left: 10px solid #999;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .dato {
+      font-size: 15px;
+      margin: 8px 0;
+    }
+
+    .estado {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .NORMAL { border-left-color: #22c55e; }
+    .ATENCION { border-left-color: #84cc16; }
+    .ALERTA { border-left-color: #eab308; }
+    .RIESGO { border-left-color: #f97316; }
+    .CRITICO { border-left-color: #ef4444; }
+    .EMERGENCIA { border-left-color: #7f1d1d; }
+    .ERROR { border-left-color: #6b7280; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #111827;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>SmartPipes</h1>
+  <p class="subtitulo">Monitoreo de alcantarillados en tiempo real</p>
+
+  <h2>Estado actual de nodos</h2>
+  <div id="nodos" class="contenedor"></div>
+
+  <h2>Ultimas mediciones</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Nodo</th>
+        <th>Distancia</th>
+        <th>Lleno</th>
+        <th>Humedad</th>
+        <th>Estado</th>
+        <th>Bateria</th>
+      </tr>
+    </thead>
+
+    <tbody id="tabla-mediciones"></tbody>
+  </table>
+
+  <script>
+    async function cargarNodos() {
+      const res = await fetch("/api/nodos");
+      const nodos = await res.json();
+
+      const contenedor = document.getElementById("nodos");
+      contenedor.innerHTML = "";
+
+      if (nodos.length === 0) {
+        contenedor.innerHTML = "<p>Aun no hay mediciones.</p>";
+        return;
+      }
+
+      nodos.forEach(nodo => {
+        const estadoClase = nodo.estado || "ERROR";
+
+        const card = document.createElement("div");
+        card.className = `card ${estadoClase}`;
+
+        card.innerHTML = `
+          <h2>Nodo ${nodo.nodo_id}</h2>
+          <div class="dato">Distancia: ${nodo.distancia_cm} cm</div>
+          <div class="dato">Lleno: ${nodo.porcentaje_lleno}%</div>
+          <div class="dato">Humedad: ${nodo.humedad ? "SI" : "NO"}</div>
+          <div class="dato">Bateria: ${nodo.bateria_voltaje ?? "-"} V</div>
+          <div class="dato">Ultima medicion: ${new Date(nodo.creado_en).toLocaleString()}</div>
+          <div class="estado">${nodo.estado}</div>
+        `;
+
+        contenedor.appendChild(card);
+      });
+    }
+
+    async function cargarMediciones() {
+      const res = await fetch("/api/mediciones");
+      const mediciones = await res.json();
+
+      const tabla = document.getElementById("tabla-mediciones");
+      tabla.innerHTML = "";
+
+      mediciones.forEach(m => {
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+          <td>${new Date(m.creado_en).toLocaleString()}</td>
+          <td>${m.nodo_id}</td>
+          <td>${m.distancia_cm} cm</td>
+          <td>${m.porcentaje_lleno}%</td>
+          <td>${m.humedad ? "SI" : "NO"}</td>
+          <td>${m.estado}</td>
+          <td>${m.bateria_voltaje ?? "-"} V</td>
+        `;
+
+        tabla.appendChild(fila);
+      });
+    }
+
+    async function actualizar() {
+      await cargarNodos();
+      await cargarMediciones();
+    }
+
+    actualizar();
+    setInterval(actualizar, 5000);
+  </script>
+</body>
+</html>
