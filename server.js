@@ -103,14 +103,14 @@ app.post("/api/mediciones", async (req, res) => {
   }
 });
 
-// Ver ultimas mediciones
+// Ultimas mediciones generales
 app.get("/api/mediciones", async (req, res) => {
   try {
     const resultado = await pool.query(`
       SELECT *
       FROM mediciones
       ORDER BY creado_en DESC
-      LIMIT 100;
+      LIMIT 200;
     `);
 
     res.json(resultado.rows);
@@ -123,7 +123,7 @@ app.get("/api/mediciones", async (req, res) => {
   }
 });
 
-// Ver ultimo estado de cada nodo
+// Ultimo estado de cada sensor
 app.get("/api/nodos", async (req, res) => {
   try {
     const resultado = await pool.query(`
@@ -141,10 +141,53 @@ app.get("/api/nodos", async (req, res) => {
 
     res.json(resultado.rows);
   } catch (error) {
-    console.error("Error leyendo nodos:", error);
+    console.error("Error leyendo sensores:", error);
     res.status(500).json({
       ok: false,
-      error: "Error leyendo nodos",
+      error: "Error leyendo sensores",
+    });
+  }
+});
+
+// Historico por sensor y mes
+app.get("/api/historico", async (req, res) => {
+  try {
+    const sensorId = Number(req.query.sensor_id);
+    const mes = req.query.mes; // formato YYYY-MM
+
+    if (!sensorId || !mes) {
+      return res.status(400).json({
+        ok: false,
+        error: "Falta sensor_id o mes. Ejemplo: /api/historico?sensor_id=1&mes=2026-06",
+      });
+    }
+
+    const inicio = `${mes}-01`;
+
+    const resultado = await pool.query(
+      `
+      SELECT *
+      FROM mediciones
+      WHERE nodo_id = $1
+        AND creado_en >= $2::date
+        AND creado_en < ($2::date + INTERVAL '1 month')
+      ORDER BY creado_en ASC;
+      `,
+      [sensorId, inicio]
+    );
+
+    res.json({
+      ok: true,
+      sensor_id: sensorId,
+      mes,
+      total: resultado.rows.length,
+      mediciones: resultado.rows,
+    });
+  } catch (error) {
+    console.error("Error leyendo historico:", error);
+    res.status(500).json({
+      ok: false,
+      error: "Error leyendo historico",
     });
   }
 });
