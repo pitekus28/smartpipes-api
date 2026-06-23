@@ -6,159 +6,744 @@
 
   <title>SmartPipes Dashboard</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --dark: #0f172a;
+      --line: #e2e8f0;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+
+      --normal: #22c55e;
+      --atencion: #84cc16;
+      --alerta: #eab308;
+      --riesgo: #f97316;
+      --critico: #ef4444;
+      --emergencia: #7f1d1d;
+      --error: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #eef2f5;
       margin: 0;
-      padding: 20px;
-      color: #1f2933;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    h1 {
-      margin-bottom: 5px;
+    header {
+      background: linear-gradient(135deg, #020617, #0f172a, #164e63);
+      color: white;
+      padding: 34px 36px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.28);
     }
 
-    .subtitulo {
-      color: #5f6b7a;
-      margin-bottom: 25px;
+    header h1 {
+      margin: 0;
+      font-size: 44px;
+      letter-spacing: -1px;
     }
 
-    .contenedor {
+    header p {
+      margin: 8px 0 0;
+      color: #cbd5e1;
+      font-size: 18px;
+    }
+
+    .main {
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 28px 32px 46px;
+    }
+
+    .top-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      margin-bottom: 22px;
     }
 
-    .card {
+    .panel {
       background: white;
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-      border-left: 10px solid #999;
+      border-radius: 22px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
     }
 
-    .card h2 {
-      margin-top: 0;
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
     }
 
-    .dato {
-      font-size: 15px;
-      margin: 8px 0;
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 14px;
+      align-items: end;
     }
 
-    .estado {
-      font-size: 22px;
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
       font-weight: bold;
-      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
-    .NORMAL { border-left-color: #22c55e; }
-    .ATENCION { border-left-color: #84cc16; }
-    .ALERTA { border-left-color: #eab308; }
-    .RIESGO { border-left-color: #f97316; }
-    .CRITICO { border-left-color: #ef4444; }
-    .EMERGENCIA { border-left-color: #7f1d1d; }
-    .ERROR { border-left-color: #6b7280; }
+    select, input, button {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      font-size: 15px;
+      background: white;
+      color: var(--text);
+    }
+
+    button {
+      background: var(--dark);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    button:hover {
+      background: #1e293b;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .summary-card {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .sensor-card {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      background: white;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .sensor-stripe {
+      background: var(--normal);
+    }
+
+    .sensor-content {
+      padding: 22px;
+    }
+
+    .sensor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .sensor-header h3 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      background: var(--normal);
+    }
+
+    .sensor-data {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .data-box {
+      background: #f8fafc;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 14px;
+    }
+
+    .data-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .data-value {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .progress-wrap {
+      height: 14px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .updated {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 14px;
+    }
+
+    .chart-panel {
+      background: white;
+      border-radius: 22px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+      margin-bottom: 26px;
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .chart-head h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .chart-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .chart-box {
+      height: 380px;
+    }
+
+    .table-panel {
+      background: white;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .table-title {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .table-title h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 25px;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
+      min-width: 880px;
     }
 
     th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
       text-align: left;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     th {
-      background: #111827;
+      background: var(--dark);
       color: white;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .estado-pill {
+      color: white;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 18px 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .top-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 34px;
+      }
+
+      .main {
+        padding: 20px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sensor-data {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
 <body>
-  <h1>SmartPipes</h1>
-  <p class="subtitulo">Monitoreo de alcantarillados en tiempo real</p>
+  <header>
+    <h1>SmartPipes</h1>
+    <p>Dashboard histórico para monitoreo preventivo de alcantarillados</p>
+  </header>
 
-  <h2>Estado actual de nodos</h2>
-  <div id="nodos" class="contenedor"></div>
+  <main class="main">
+    <section class="top-grid">
+      <div class="panel">
+        <h2>Filtros de histórico</h2>
 
-  <h2>Ultimas mediciones</h2>
+        <div class="filters">
+          <div>
+            <label for="sensor-select">Sensor</label>
+            <select id="sensor-select">
+              <option value="1">Sensor 1 UAI</option>
+            </select>
+          </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Nodo</th>
-        <th>Distancia</th>
-        <th>Lleno</th>
-        <th>Humedad</th>
-        <th>Estado</th>
-        <th>Bateria</th>
-      </tr>
-    </thead>
+          <div>
+            <label for="month-select">Mes</label>
+            <input type="month" id="month-select" />
+          </div>
 
-    <tbody id="tabla-mediciones"></tbody>
-  </table>
+          <div>
+            <button onclick="cargarHistorico()">Ver histórico</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Resumen mensual</h2>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-label">Mediciones</div>
+            <div class="summary-value" id="res-mediciones">0</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-label">Promedio</div>
+            <div class="summary-value" id="res-promedio">0%</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-label">Máximo</div>
+            <div class="summary-value" id="res-maximo">0%</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-label">Críticos</div>
+            <div class="summary-value" id="res-criticos">0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <h2>Estado actual de sensores</h2>
+    <section id="sensores" class="sensor-grid"></section>
+
+    <section class="chart-panel">
+      <div class="chart-head">
+        <div>
+          <h2>Histórico de porcentaje de llenado</h2>
+          <div class="chart-subtitle" id="chart-subtitle">Seleccione sensor y mes</div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <canvas id="historicoChart"></canvas>
+      </div>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-title">
+        <h2>Detalle histórico mensual</h2>
+        <span class="chart-subtitle" id="tabla-subtitle">-</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Sensor</th>
+              <th>Distancia física</th>
+              <th>% Llenado</th>
+              <th>Humedad</th>
+              <th>Estado</th>
+              <th>Batería</th>
+            </tr>
+          </thead>
+
+          <tbody id="tabla-historico"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    SmartPipes - Prototipo IoT UAI para monitoreo urbano preventivo
+  </footer>
 
   <script>
-    async function cargarNodos() {
-      const res = await fetch("/api/nodos");
-      const nodos = await res.json();
+    const SENSOR_NAMES = {
+      1: "Sensor 1 UAI",
+      2: "Sensor 2 UAI",
+      3: "Sensor 3 UAI"
+    };
 
-      const contenedor = document.getElementById("nodos");
+    let historicoChart = null;
+
+    function nombreSensor(id) {
+      return SENSOR_NAMES[id] || `Sensor ${id} UAI`;
+    }
+
+    function colorEstado(estado) {
+      const colores = {
+        NORMAL: "#22c55e",
+        ATENCION: "#84cc16",
+        ALERTA: "#eab308",
+        RIESGO: "#f97316",
+        CRITICO: "#ef4444",
+        EMERGENCIA: "#7f1d1d",
+        ERROR: "#64748b"
+      };
+
+      return colores[estado] || colores.ERROR;
+    }
+
+    function formatearFecha(fecha) {
+      return new Date(fecha).toLocaleString("es-CL");
+    }
+
+    function mesActual() {
+      const hoy = new Date();
+      const year = hoy.getFullYear();
+      const month = String(hoy.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    }
+
+    function actualizarSelectorSensores(sensores) {
+      const select = document.getElementById("sensor-select");
+      const actual = select.value || "1";
+
+      const ids = sensores.map(s => Number(s.nodo_id));
+      if (!ids.includes(1)) ids.unshift(1);
+
+      select.innerHTML = "";
+
+      ids.forEach(id => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = nombreSensor(id);
+        select.appendChild(option);
+      });
+
+      select.value = ids.includes(Number(actual)) ? actual : ids[0];
+    }
+
+    async function cargarSensoresActuales() {
+      const res = await fetch("/api/nodos");
+      const sensores = await res.json();
+
+      actualizarSelectorSensores(sensores);
+
+      const contenedor = document.getElementById("sensores");
       contenedor.innerHTML = "";
 
-      if (nodos.length === 0) {
-        contenedor.innerHTML = "<p>Aun no hay mediciones.</p>";
+      if (sensores.length === 0) {
+        contenedor.innerHTML = "<p class='empty'>Aún no hay sensores con mediciones.</p>";
         return;
       }
 
-      nodos.forEach(nodo => {
-        const estadoClase = nodo.estado || "ERROR";
+      sensores.forEach(sensor => {
+        const estado = sensor.estado || "ERROR";
+        const color = colorEstado(estado);
+        const porcentaje = Number(sensor.porcentaje_lleno || 0);
 
-        const card = document.createElement("div");
-        card.className = `card ${estadoClase}`;
+        const card = document.createElement("article");
+        card.className = "sensor-card";
 
         card.innerHTML = `
-          <h2>Nodo ${nodo.nodo_id}</h2>
-          <div class="dato">Distancia: ${nodo.distancia_cm} cm</div>
-          <div class="dato">Lleno: ${nodo.porcentaje_lleno}%</div>
-          <div class="dato">Humedad: ${nodo.humedad ? "SI" : "NO"}</div>
-          <div class="dato">Bateria: ${nodo.bateria_voltaje ?? "-"} V</div>
-          <div class="dato">Ultima medicion: ${new Date(nodo.creado_en).toLocaleString()}</div>
-          <div class="estado">${nodo.estado}</div>
+          <div class="sensor-stripe" style="background:${color};"></div>
+
+          <div class="sensor-content">
+            <div class="sensor-header">
+              <h3>${nombreSensor(sensor.nodo_id)}</h3>
+              <span class="badge" style="background:${color};">${estado}</span>
+            </div>
+
+            <div class="sensor-data">
+              <div class="data-box">
+                <div class="data-label">Distancia física</div>
+                <div class="data-value">${sensor.distancia_cm} cm</div>
+              </div>
+
+              <div class="data-box">
+                <div class="data-label">Porcentaje lleno</div>
+                <div class="data-value">${porcentaje.toFixed(0)}%</div>
+                <div class="progress-wrap">
+                  <div class="progress" style="width:${porcentaje}%; background:${color};"></div>
+                </div>
+              </div>
+
+              <div class="data-box">
+                <div class="data-label">Humedad</div>
+                <div class="data-value">${sensor.humedad ? "SI" : "NO"}</div>
+              </div>
+
+              <div class="data-box">
+                <div class="data-label">Batería</div>
+                <div class="data-value">${sensor.bateria_voltaje ?? "-"} V</div>
+              </div>
+            </div>
+
+            <div class="updated">
+              Última medición: ${formatearFecha(sensor.creado_en)}
+            </div>
+          </div>
         `;
 
         contenedor.appendChild(card);
       });
     }
 
-    async function cargarMediciones() {
-      const res = await fetch("/api/mediciones");
-      const mediciones = await res.json();
+    function calcularResumen(mediciones) {
+      const total = mediciones.length;
 
-      const tabla = document.getElementById("tabla-mediciones");
+      if (total === 0) {
+        document.getElementById("res-mediciones").textContent = "0";
+        document.getElementById("res-promedio").textContent = "0%";
+        document.getElementById("res-maximo").textContent = "0%";
+        document.getElementById("res-criticos").textContent = "0";
+        return;
+      }
+
+      const porcentajes = mediciones.map(m => Number(m.porcentaje_lleno || 0));
+      const promedio = porcentajes.reduce((a, b) => a + b, 0) / total;
+      const maximo = Math.max(...porcentajes);
+
+      const criticos = mediciones.filter(m =>
+        m.estado === "CRITICO" || m.estado === "EMERGENCIA"
+      ).length;
+
+      document.getElementById("res-mediciones").textContent = total;
+      document.getElementById("res-promedio").textContent = promedio.toFixed(0) + "%";
+      document.getElementById("res-maximo").textContent = maximo.toFixed(0) + "%";
+      document.getElementById("res-criticos").textContent = criticos;
+    }
+
+    function dibujarGrafico(mediciones, sensorId, mes) {
+      const ctx = document.getElementById("historicoChart");
+
+      const labels = mediciones.map(m =>
+        new Date(m.creado_en).toLocaleDateString("es-CL", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      );
+
+      const datos = mediciones.map(m => Number(m.porcentaje_lleno || 0));
+
+      if (historicoChart) {
+        historicoChart.destroy();
+      }
+
+      historicoChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "% de llenado",
+              data: datos,
+              tension: 0.35,
+              fill: true,
+              borderWidth: 3,
+              pointRadius: 3,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: true
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return "Llenado: " + context.raw.toFixed(1) + "%";
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              title: {
+                display: true,
+                text: "% de llenado físico"
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 12
+              }
+            }
+          }
+        }
+      });
+
+      document.getElementById("chart-subtitle").textContent =
+        `${nombreSensor(sensorId)} - ${mes}`;
+    }
+
+    function cargarTablaHistorico(mediciones) {
+      const tabla = document.getElementById("tabla-historico");
       tabla.innerHTML = "";
 
-      mediciones.forEach(m => {
+      if (mediciones.length === 0) {
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="7">No hay mediciones para este sensor en el mes seleccionado.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      const recientes = [...mediciones].reverse();
+
+      recientes.forEach(m => {
+        const estado = m.estado || "ERROR";
+        const color = colorEstado(estado);
+
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-          <td>${new Date(m.creado_en).toLocaleString()}</td>
-          <td>${m.nodo_id}</td>
+          <td>${formatearFecha(m.creado_en)}</td>
+          <td>${nombreSensor(m.nodo_id)}</td>
           <td>${m.distancia_cm} cm</td>
           <td>${m.porcentaje_lleno}%</td>
           <td>${m.humedad ? "SI" : "NO"}</td>
-          <td>${m.estado}</td>
+          <td>
+            <span class="estado-pill" style="background:${color};">
+              ${estado}
+            </span>
+          </td>
           <td>${m.bateria_voltaje ?? "-"} V</td>
         `;
 
@@ -166,13 +751,46 @@
       });
     }
 
-    async function actualizar() {
-      await cargarNodos();
-      await cargarMediciones();
+    async function cargarHistorico() {
+      const sensorId = document.getElementById("sensor-select").value;
+      const mes = document.getElementById("month-select").value;
+
+      if (!sensorId || !mes) {
+        alert("Selecciona un sensor y un mes.");
+        return;
+      }
+
+      const res = await fetch(`/api/historico?sensor_id=${sensorId}&mes=${mes}`);
+      const data = await res.json();
+
+      if (!data.ok) {
+        alert("Error cargando histórico.");
+        return;
+      }
+
+      const mediciones = data.mediciones;
+
+      calcularResumen(mediciones);
+      dibujarGrafico(mediciones, Number(sensorId), mes);
+      cargarTablaHistorico(mediciones);
+
+      document.getElementById("tabla-subtitle").textContent =
+        `${nombreSensor(sensorId)} - ${mes}`;
     }
 
-    actualizar();
-    setInterval(actualizar, 5000);
+    async function iniciar() {
+      document.getElementById("month-select").value = mesActual();
+
+      await cargarSensoresActuales();
+      await cargarHistorico();
+
+      setInterval(async () => {
+        await cargarSensoresActuales();
+        await cargarHistorico();
+      }, 10000);
+    }
+
+    iniciar();
   </script>
 </body>
 </html>
