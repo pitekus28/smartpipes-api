@@ -5,7 +5,9 @@ SmartPipes es un prototipo IoT para el monitoreo preventivo de alcantarillados. 
 ## Integrantes
 
 * Javier Fuentes
-* [Agregar integrantes del equipo]
+* Diego Fuentes
+* Ignacio Tajmuch
+* Felipe Madariaga
 
 ## Problema que resuelve
 
