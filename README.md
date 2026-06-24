@@ -16,10 +16,14 @@ El proyecto busca prevenir acumulación de agua, obstrucciones en ductos y situa
 El sistema utiliza un sensor ultrasónico para medir distancia dentro del ducto y un sensor de lluvia para detectar presencia de agua. Con esos datos, clasifica el estado del sistema en distintos niveles de alerta y muestra la información en una pantalla OLED.
 
 ## Componentes principales
-- Microcontrolador
-- Sensor ultrasónico HC-SR04
-- Sensor de lluvia
-- Pantalla OLED SSD1306
+-ESP32-S3 N16R8
+-Sensor ultrasónico impermeable SR04M-2 / AJ-SR04M
+-Sensor de humedad/lluvia MH-RD Raindrops Sensor de 2 pines
+-Batería LiPo 3.7V 2000mAh
+-Módulo Step-Up DC-DC 3.7V a 5V
+-Resistencia 10kΩ
+-Cables Dupont
+-Protoboard / base de conexión interna/ Placa de expasion Esp 32 s3
 
 ## Estructura del repositorio
 - `firmware/`: código del proyecto
