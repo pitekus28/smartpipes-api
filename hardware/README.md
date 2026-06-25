@@ -1,4 +1,3 @@
-# Hardware
 ## Documentación de hardware
 
 La documentación del hardware se encuentra en la carpeta `hardware/`.
