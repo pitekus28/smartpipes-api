@@ -1,0 +1,5 @@
+fecha_hora,sensor,distancia_cm,porcentaje_llenado,humedad,estado
+24-06-2026 3:14:52 p. m.,Sensor 1 UAI,84.60,19.30%,SI,ATENCION
+24-06-2026 4:00:17 p. m.,Sensor 1 UAI,63.10,46.10%,NO,ALERTA
+24-06-2026 4:19:01 p. m.,Sensor 1 UAI,22.70,96.60%,NO,EMERGENCIA
+24-06-2026 4:56:38 p. m.,Sensor 1 UAI,40.90,73.90%,NO,CRITICO
