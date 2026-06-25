@@ -1,3 +1,4 @@
+<img width="2760" height="2520" alt="smartpipes_sensor1_UAI_esquematico_final" src="https://github.com/user-attachments/assets/5904500d-3e49-4aea-bac1-9eebd219587d" />
 # Esquemático de conexiones SmartPipes
 
 ## ESP32-S3 N16R8
