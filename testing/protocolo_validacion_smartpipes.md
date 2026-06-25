@@ -182,6 +182,7 @@ Ejemplos de mediciones observadas:
 | 20.0 cm | 100.0% | SI | EMERGENCIA | Tapado total o nivel extremadamente alto |
 
 La variable de humedad se interpreta como una señal complementaria. El estado principal del ducto se determina por la distancia y el porcentaje de llenado. La humedad permite identificar si existe presencia de agua o conducción en el sensor MH-RD, pero no reemplaza la medición ultrasónica. Por esta razón, una obstrucción seca podría marcar humedad NO, mientras que una condición con acumulación de agua debería marcar humedad SI.
+
 Los resultados muestran que el sistema responde de manera lógica: cuando la distancia disminuye, el porcentaje de llenado aumenta y el estado pasa desde NORMAL hacia ATENCION, ALERTA, CRITICO o EMERGENCIA. La humedad funciona como una variable secundaria para complementar la interpretación, especialmente cuando el aumento de nivel está asociado a presencia de agua.
 
 ---
