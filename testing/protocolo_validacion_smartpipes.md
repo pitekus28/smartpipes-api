@@ -174,12 +174,11 @@ Ejemplos de mediciones observadas:
 
 | Distancia medida | Porcentaje de llenado | Humedad | Estado | Interpretación |
 |---:|---:|---|---|---|
-| 222.0 cm | 0.0% | NO | NORMAL | Ducto despejado |
-| 100.0 cm | 0.0% | NO | NORMAL | Alcantarilla limpia según calibración |
-| 81.2 cm | 23.5% | NO | ATENCION | Acumulación leve |
-| 56.3 cm | 54.6% | SI | ALERTA | Posible aumento de nivel con humedad |
-| 28.2 cm | 89.8% | SI | CRITICO | Ducto casi colapsado |
-| 20.0 cm | 100.0% | SI | EMERGENCIA | Tapado total o nivel extremadamente alto |
+| 84.60cm | 19.30% | SI | ATENCION | 3:14;52 P.M. |
+| 63.10cm | 46.10% | NO | ALERTA | 4:00;17 P.M. |
+| 22.7cm | 96.6% | NO | EMERGENCIA | 4:19;01 P.M. |
+| 40.9cm | 73.9% | NO | CRITICO | 4:58;38 P.M. |
+
 
 La variable de humedad se interpreta como una señal complementaria. El estado principal del ducto se determina por la distancia y el porcentaje de llenado. La humedad permite identificar si existe presencia de agua o conducción en el sensor MH-RD, pero no reemplaza la medición ultrasónica. Por esta razón, una obstrucción seca podría marcar humedad NO, mientras que una condición con acumulación de agua debería marcar humedad SI.
 
